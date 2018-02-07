@@ -1146,6 +1146,9 @@ function hotkeysOnOff() {
 
 function turnOnHotkeys() {
   window.onkeydown = function onKeyDown(e) {
+    if (e.altKey || e.shiftKey || e.ctrlKey) {
+      return;
+    }
     if (editingKey) {
       editKey(e);
     } else {
@@ -1349,7 +1352,6 @@ function selectMasterButton(row) {
   const aButton = row.children('td').eq(9).children('a');
   const bButton = row.children('td').eq(10).children('a');
   const cButton = row.children('td').eq(11).children('a');
-  const nButton = row.children('td').eq(12).children('a');
   buttonToClick = keyPressSettings.defaultButton;
   if (keyPressSettings.priorityThreeEnabled && !checkRowToHide(row, p3)) {
     buttonToClick = keyPressSettings.priorityThreeButton;
@@ -1371,7 +1373,7 @@ function selectMasterButton(row) {
       tryClick(cButton);
       break;
     case 'N':
-      tryClick(nButton);
+      CommandPopup({target: row.attr('name')})
       break;
     default:
       row.hide();
