@@ -63,6 +63,7 @@ const translations = {
     filter_60: "If row doesn't match any profiles, click",
     filter_61: "today", //must be as it appears in tribalwars
     filter_62: "yesterday", //must be as it appears in tribalwars
+    filter_63: "N",
     instructions_01: "Checked report types will be hidden",
     instructions_02: "Filters left unchecked will not be applied",
     instructions_03: "Separate continents with a period. Example: 55.54.53",
