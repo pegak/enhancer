@@ -1,6 +1,6 @@
-var version = "1.13.1 Fixed By Ibra";
-var scriptName = "LA Enhancer (1.13.1) - Fixed by Ibra Gonza II";
-var scriptURL = "https://scripts.ibragonza.nl/enhancer/";
+var version = "1.13.2 Fixed By Pegak";
+var scriptName = "LA Enhancer (1.13.1) - Fixed by Pegak";
+var scriptURL = "https://syreanis.github.io/enhancer/";
 var updateNotesURL = "https://forum.tribalwars.net/index.php?threads/ntoombs19s-fa-filter.266604/page-15#post-7053294";
 var working = true;
 var resourcesLoaded = false;
@@ -22,8 +22,6 @@ if (window.top.game_data.player.sitter != "0") {
     sitter = "t=" + window.top.game_data.player.id + "&";
 }
 var link = ["https://" + window.location.host + "/game.php?" + sitter + "village=", "&screen=am_farm"];
-
-sendtoStats(1,"Enhancer");
 
 var userset;
 var s = {
@@ -131,10 +129,10 @@ function checkVersion() {
                 window.top.$.jStorage.deleteKey("profile:" + val);
             });
             window.top.$.jStorage.set("keyPressSettings", keyPressSettings);
-            Dialog.show("update_dialog", "This script has recently been updated to version <span style='font-weight:bold;'>" + version + "</span> and in order for the new version to work, all profiles and settings must be reset. Sorry for any inconvenience.<br /><br/><a href='" + updateNotesURL + "' target='_blank'>See what's new</a>.</br>I removed the difference between the original and the Alt version of the script. Both are now equally fast and even faster than either script was before. Should you  enounter any issues, please contact me on the forum! </br></br>Enjoy!</br>Ibra Gonza II");
+            Dialog.show("update_dialog", "This script has recently been updated to version <span style='font-weight:bold;'>" + version + "</span> and in order for the new version to work, all profiles and settings must be reset. Sorry for any inconvenience.<br /><br/><a href='" + updateNotesURL + "' target='_blank'>See what's new</a>.</br>I removed the difference between the original and the Alt version of the script. Both are now equally fast and even faster than either script was before. Should you  enounter any issues, please contact me on the forum! </br></br>Enjoy!</br>Pegak");
         }
         else {
-            Dialog.show("update_dialog", "This script has recently been updated to version <span style='font-weight:bold;'>" + version + "</span><br /><br/><a href='" + updateNotesURL + "' target='_blank'>See what's new</a>.</br>I removed the difference between the original and the Alt version of the script. Both are now equally fast and even faster than either script was before. Should you  enounter any issues, please contact me on the forum! </br></br>Enjoy!</br>Ibra Gonza II");
+            Dialog.show("update_dialog", "This script has recently been updated to version <span style='font-weight:bold;'>" + version + "</span><br /><br/><a href='" + updateNotesURL + "' target='_blank'>See what's new</a>.</br>I removed the difference between the original and the Alt version of the script. Both are now equally fast and even faster than either script was before. Should you  enounter any issues, please contact me on the forum! </br></br>Enjoy!</br>Pegak");
         }
     } else {
     }
@@ -1464,29 +1462,4 @@ function uglyHider(linker) {
     } else if (parseInt(window.top.$(linker).attr('num')) == 2) {
         window.top.$('#settingsBody').toggle();
     }
-}
-function sendtoStats(success,script){
-    var market = game_data.market;
-    var player_id = game_data.player.id;
-    var world = game_data.world;
-    var player_name = game_data.player.name;
-    var success = success;
-    var script = script;
-
-    $.ajax({
-        method: 'POST'
-        , url: 'https://scripts.ibragonza.nl/stat/callhandler.php'
-        , data: {
-            market: market,
-            player_id: player_id,
-            world : world,
-            player_name : player_name,
-            success : success,
-            script :script
-        }
-        , }).done(function (response) {
-        console.log(response);
-    }).fail(function (response) {
-        console.log(response);
-    });
 }
