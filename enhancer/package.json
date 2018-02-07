@@ -1,0 +1,36 @@
+{
+  "name": "enhancer",
+  "version": "1.13.2",
+  "description": "LA Enhancer (1.13.2)",
+  "main": "enhancer.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint": "eslint ./enhancer.js",
+    "eslint:fix": "eslint ./enhancer.js --fix"    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syreanis/syreanis.github.io.git"
+  },
+  "keywords": [
+    "tribal wars",
+    "script",
+    "farm",
+    "account manager"
+  ],
+  "author": "Pegak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/syreanis/syreanis.github.io/issues"
+  },
+  "homepage": "https://github.com/syreanis/syreanis.github.io#readme",
+  "devDependencies": {
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  },
+  "dependencies": {}
+}
