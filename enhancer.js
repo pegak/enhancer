@@ -99,7 +99,7 @@ let keyPressSettings = {
   priorityThreeButton: 'Skip',
   defaultButton: 'Skip',
 };
-const availableLangs = ['en', 'es', 'el', 'ar', 'it'];
+const availableLangs = ['en', 'cs'];
 window.top.$.getScript(`${scriptURL}lib/jstorage.js`, () => {
   window.top.$.getScript(`${scriptURL}resources.js`, () => {
     if (window.top.$.jStorage.get('language') === null) {
@@ -1388,17 +1388,8 @@ function setDefaultLanguage() {
   }
   const domain = url.join('.');
   switch (domain) {
-    case 'fyletikesmaxes.gr':
-      window.top.$.jStorage.set('language', 'el');
-      break;
-    case 'tribals.it':
-      window.top.$.jStorage.set('language', 'it');
-      break;
-    case 'guerrastribales.es':
-      window.top.$.jStorage.set('language', 'es');
-      break;
-    case 'tribalwars.ae':
-      window.top.$.jStorage.set('language', 'ar');
+    case 'divokekmeny.cz':
+      window.top.$.jStorage.set('language', 'cs');
       break;
     default:
       window.top.$.jStorage.set('language', 'en');
@@ -1425,10 +1416,7 @@ function loadLanguage(lang) {
 
 function addLanguages() {
   window.top.$('#language').append("<option value='en'>English</option>");
-  window.top.$('#language').append("<option value='el'>ÃŽâ€¢ÃŽÂ»ÃŽÂ»ÃŽÂ·ÃŽÂ½ÃŽÂ¹ÃŽÂºÃŽÂ¬</option>");
-  window.top.$('#language').append("<option value='it'>Italiano</option>");
-  window.top.$('#language').append("<option value='es'>EspaÃƒÂ±ol</option>");
-  window.top.$('#language').append("<option value='ar'>Ã˜Â§Ã™â€žÃ™â€žÃ˜ÂºÃ˜Â© Ã˜Â§Ã™â€žÃ˜Â¹Ã˜Â±Ã˜Â¨Ã™Å Ã˜Â©</option>");
+  window.top.$('#language').append("<option value='cs'>Čeština</option>");
 }
 
 function parseBool(value) {
