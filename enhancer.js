@@ -343,7 +343,7 @@ function customSendUnits(sendLink, target_village, template_id, button) {
         const sep1 = buttext.split(/<br\s*?\/?>/ig);
         sep1.splice(sep1.length - 2, 1);
         window.top.UI.SuccessMessage(sep1.join(' '), 100);
-        window.top.Accountmanager.farm.updateOwnUnitsAvailable(window.data.current_units);
+        window.top.Accountmanager.farm.updateOwnUnitsAvailable(response.current_units);
       }
       return true;
     }, 'json');
