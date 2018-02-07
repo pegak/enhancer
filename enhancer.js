@@ -3,19 +3,15 @@ const scriptName = 'LA Enhancer (1.13.2) - Fixed by Pegak';
 const scriptURL = 'https://syreanis.github.io/enhancer/';
 const updateNotesURL = 'https://forum.tribalwars.net/index.php?threads/ntoombs19s-fa-filter.266604/page-15#post-7053294';
 const working = true;
-const resourcesLoaded = false;
-const scriptLoaded = false;
 let pagesLoaded = false;
 let filtersApplied = false;
 let cansend = true;
-const keySetMode = false;
 let hideRow = false;
 let editingKey = false;
 const troubleshoot = false;
 const clearProfiles = false;
 let reason = [];
 let keyToEdit;
-let current_units;
 const currentGameTime = getCurrentGameTime();
 let sitter = '';
 if (window.top.game_data.player.sitter !== '0') {
@@ -23,6 +19,7 @@ if (window.top.game_data.player.sitter !== '0') {
 }
 const link = [`https://${window.location.host}/game.php?${sitter}village=`, '&screen=am_farm'];
 
+let buttons;
 let userset;
 const s = {
   start_page: 0,
@@ -116,20 +113,6 @@ window.top.$.getScript(`${scriptURL}lib/jstorage.js`, () => {
   window.top.$.getScript(`${scriptURL}notify.js`);
 });
 
-function run() {
-  console.log('run');
-  checkVersion();
-  checkWorking();
-  setVersion();
-  makeItPretty();
-  showSettings();
-  turnOnHotkeys();
-  hotkeysOnOff();
-  if (userset[s.enable_auto_run] !== false) {
-    applySettings();
-  }
-}
-
 function checkVersion() {
   if (getVersion() !== version) {
     buttons = [{
@@ -147,7 +130,7 @@ function checkVersion() {
     } else {
       Dialog.show('update_dialog', `This script has recently been updated to version <span style='font-weight:bold;'>${version}</span><br /><br/><a href='${updateNotesURL}' target='_blank'>See what's new</a>.</br>I removed the difference between the original and the Alt version of the script. Both are now equally fast and even faster than either script was before. Should you  enounter any issues, please contact me on the forum! </br></br>Enjoy!</br>Pegak`);
     }
-  } else {}
+  }
 }
 
 function checkWorking() {
@@ -329,78 +312,82 @@ function removeFirstPage() {
   window.top.$('#plunder_list_nav').hide();
 }
 
-function customSendUnits(link, target_village, template_id, button) {
+function customSendUnits(sendLink, target_village, template_id, button) {
   if (!checkIfNextVillage()) {
     button.closest('tr').hide();
-    link = window.top.$(link);
-    if (link.hasClass('farm_icon_disabled')) return false;
-    const data = {
+    const $link = window.top.$(sendLink);
+    if ($link.hasClass('farm_icon_disabled')) {
+      return false;
+    }
+    const postData = {
       target: target_village,
       template_id,
       source: window.top.game_data.village.id,
     };
-    window.top.$.post(window.top.Accountmanager.send_units_link, data, (data) => {
-      if (data.error) {
-        if (userset[s.next_village_units] && data.error === 'Not enough units available') {
+    window.top.$.post(window.top.Accountmanager.send_units_link, postData, (response) => {
+      if (response.error) {
+        if (userset[s.next_village_units] && response.error === 'Not enough units available') {
           if (cansend && filtersApplied) {
             getNewVillage('n');
           }
           return false;
         }
-        window.top.UI.ErrorMessage(data.error);
+        window.top.UI.ErrorMessage(response.error);
         button.closest('tr').show();
       } else {
         setLocalStorageRow(target_village);
+        let buttext;
         if (typeof window.top.$(button).prop('tooltipText') !== 'undefined') {
-          var buttext = window.top.$(button).prop('tooltipText');
+          buttext = window.top.$(button).prop('tooltipText');
         }
-        const yolo = window.top.$('<div></div>').append(window.top.$(buttext));
-        const bolo = window.top.$(yolo).find('img[src*="res.png"]').eq(0).attr('src');
         const sep1 = buttext.split(/<br\s*?\/?>/ig);
         sep1.splice(sep1.length - 2, 1);
         window.top.UI.SuccessMessage(sep1.join(' '), 100);
-        window.top.Accountmanager.farm.updateOwnUnitsAvailable(data.current_units);
+        window.top.Accountmanager.farm.updateOwnUnitsAvailable(window.data.current_units);
       }
+      return true;
     }, 'json');
     return false;
   }
+  return true;
 }
 
-function customSendUnitsFromReport(link, target_village, report_id, button) {
+function customSendUnitsFromReport(sendLink, target_village, report_id, button) {
   if (!checkIfNextVillage()) {
     button.closest('tr').hide();
-    link = window.top.$(link);
-    if (link.hasClass('farm_icon_disabled')) return false;
+    const $link = window.top.$(sendLink);
+    if ($link.hasClass('farm_icon_disabled')) return false;
     const data = {
       report_id,
     };
-    window.top.$.post(window.top.Accountmanager.send_units_link_from_report, data, (data) => {
-      if (data.error) {
-        if (userset[s.next_village_units] && data.error === 'Not enough units available') {
+    window.top.$.post(window.top.Accountmanager.send_units_link_from_report, data, (response) => {
+      if (response.error) {
+        if (userset[s.next_village_units] && response.error === 'Not enough units available') {
           if (cansend && filtersApplied) {
             getNewVillage('n');
           }
           return false;
         }
-        window.top.UI.ErrorMessage(data.error);
+        window.top.UI.ErrorMessage(response.error);
         button.closest('tr').show();
       } else {
         setLocalStorageRow(target_village);
-        if (typeof data.success === 'string') {
+        if (typeof response.success === 'string') {
+          let buttext;
           if (typeof window.top.$(button).prop('tooltipText') !== 'undefined') {
-            var buttext = window.top.$(button).prop('tooltipText');
+            buttext = window.top.$(button).prop('tooltipText');
           }
-          const yolo = window.top.$('<div></div>').append(window.top.$(buttext));
-          const bolo = window.top.$(yolo).find('img[src*="res.png"]').eq(0).attr('src');
           const sep1 = buttext.split(/<br\s*?\/?>/ig);
           sep1.splice(sep1.length - 2, 1);
           window.top.UI.SuccessMessage(sep1.join(' '), 100);
-          window.top.Accountmanager.farm.updateOwnUnitsAvailable(data.current_units);
+          window.top.Accountmanager.farm.updateOwnUnitsAvailable(response.current_units);
         }
       }
+      return true;
     }, 'json');
     return false;
   }
+  return true;
 }
 
 function setOnclick(button) {
@@ -421,13 +408,15 @@ function addTableInfo() {
   window.top.$('#am_widget_Farm tr th').slice(0, 1).after('<th></th>');
   window.top.$('#am_widget_Farm tr:not(:first-child)').each(function addTableInfoInner(i) {
     window.top.$(this).children('td').each(function addTableInfoInnerInner(j) {
+      let attackImg;
+      let tooltip;
       switch (j) {
         case 1:
           window.top.$(this).filter(':first').before(`<td style='width:10px;font-weight:bold;' id='rowNum'>${i + 1}</td>`);
           break;
         case 3:
-          var attackImg = window.top.$(this).find('img');
-          var tooltip = window.top.$(this).find('img').prop('tooltipText');
+          attackImg = window.top.$(this).find('img');
+          tooltip = window.top.$(this).find('img').prop('tooltipText');
           if (typeof tooltip !== 'undefined') {
             const numAttacks = tooltip.replace(/\D/g, '');
             attackImg.after(`<span style='font-weight:bold;'> (${numAttacks})</span>`);
@@ -450,19 +439,19 @@ function addTableInfo() {
 }
 
 function checkIfNextVillage() {
-  current_units = window.top.Accountmanager.farm.current_units;
+  const { current_units: currentUnits } = window.top.Accountmanager.farm;
   if (userset[s.next_village_scouts]) {
-    const scouts = current_units.spy;
-    if (scouts <= parseInt(userset[s.scouts_left], 10)) {
+    const { spy } = currentUnits;
+    if (spy <= parseInt(userset[s.scouts_left], 10)) {
       getNewVillage('n');
       return true;
     }
   }
   if (userset[s.next_village_farming_troops]) {
     let totalTroops = 0;
-    window.top.$('.fm_unit input:checked').each(function checkIfNextVillageInner(i) {
+    window.top.$('.fm_unit input:checked').each(function checkIfNextVillageInner() {
       const unitName = window.top.$(this).attr('name');
-      totalTroops += parseInt(current_units[unitName], 10);
+      totalTroops += parseInt(currentUnits[unitName], 10);
     });
     if (totalTroops <= parseInt(userset[s.farming_troops_left], 10)) {
       getNewVillage('n');
@@ -475,6 +464,7 @@ function checkIfNextVillage() {
       return true;
     }
   }
+  return false;
 }
 
 function applySettings() {
@@ -487,7 +477,7 @@ function applySettings() {
 }
 
 function applyFilters() {
-  window.top.$('#am_widget_Farm tr:gt(0)').each(function filterApplier(i) {
+  window.top.$('#am_widget_Farm tr:gt(0)').each(function filterApplier() {
     hideRow = checkRowToHide(window.top.$(this), userset);
     if (hideRow) {
       window.top.$(this).hide();
@@ -556,7 +546,7 @@ function checkRowToHide(row, profileArray) {
 }
 
 function resetTable() {
-  window.top.$('#plunder_list tr').each(function resetTableInner(i) {
+  window.top.$('#plunder_list tr').each(function resetTableInner() {
     window.top.$(this).show();
   });
 }
@@ -620,7 +610,7 @@ function haulSettings(cell, profileArray) {
 function hideRecentlyFarmed(cell, profileArray) {
   if (profileArray[s.hide_recent_farms]) {
     const village = cell.closest('tr').attr('name');
-    localTitle = `sitter:${sitter}, village:${village}, world:${getURL()[0]}`;
+    const localTitle = `sitter:${sitter}, village:${village}, world:${getURL()[0]}`;
     const sentTime = new Date(window.top.$.jStorage.get(localTitle));
     const t1 = currentGameTime;
     const t2 = sentTime;
@@ -817,11 +807,11 @@ function distanceSettings(cell, profileArray) {
 }
 
 function deleteRecentlyFarmed() {
-  window.top.$('#am_widget_Farm tr:gt(0)').each(function delete1(i) {
+  window.top.$('#am_widget_Farm tr:gt(0)').each(function delete1() {
     window.top.$(this).children('td').each(function delete2(j) {
       if (j === 4) {
-        reportLinkText = window.top.$.trim(window.top.$(this).children('a').html());
-        localTitle = `sitter:${sitter}, village:${reportLinkText}, world:${getURL()[0]}`;
+        const reportLinkText = window.top.$.trim(window.top.$(this).children('a').html());
+        const localTitle = `sitter:${sitter}, village:${reportLinkText}, world:${getURL()[0]}`;
         if (window.top.$.jStorage.get(localTitle) !== null) {
           window.top.$.jStorage.deleteKey(localTitle);
         }
@@ -833,54 +823,60 @@ function deleteRecentlyFarmed() {
 function getCurrentGameTime() {
   const serverTime = window.top.$('#serverTime').html().split(':');
   const serverDate = window.top.$('#serverDate').html().split('/');
-  return new Date(serverDate[2], serverDate[1] - 1, serverDate[0], serverTime[0], serverTime[1], serverTime[2], 0);
+  return new Date(
+    serverDate[2],
+    serverDate[1] - 1,
+    serverDate[0],
+    serverTime[0],
+    serverTime[1],
+    serverTime[2],
+    0,
+  );
 }
 
 function getVillageAttackedTime(cell) {
-  var time = cell.html();
+  let time = cell.html();
   const cellTime = time.split(' ');
   let attackDay;
   let attackTime;
-  var cell;
-  for (let i = 0; i < cellTime.length; i++) {
-    cell = window.top.$.trim(cellTime[i]);
-    if (cell.indexOf('.') > -1) {
-      attackDay = cell;
-    } else if (cell === translations.filter_61) {
+  for (let i = 0; i < cellTime.length; i + 1) {
+    const cellTrimmed = window.top.$.trim(cellTime[i]);
+    if (cellTrimmed.indexOf('.') > -1) {
+      attackDay = cellTrimmed;
+    } else if (cellTrimmed === translations.filter_61) {
       attackDay = translations.filter_61;
-    } else if (cell === translations.filter_62) {
+    } else if (cellTrimmed === translations.filter_62) {
       attackDay = translations.filter_62;
     }
-    if (cell.indexOf(':') > -1) {
-      attackTime = cell;
+    if (cellTrimmed.indexOf(':') > -1) {
+      attackTime = cellTrimmed;
     }
   }
   if (attackDay === translations.filter_61 || attackDay === translations.filter_62) {
-    var day = currentGameTime.getDate();
+    let day = currentGameTime.getDate();
     if (attackDay === translations.filter_62) {
-      day--;
+      day -= 1;
     }
-    var month = currentGameTime.getMonth();
-    var year = currentGameTime.getFullYear();
-    var time = attackTime.split(':');
-    var hours = time[0];
-    var minutes = time[1];
-    var seconds = time[2];
+    time = attackTime.split(':');
+    const month = currentGameTime.getMonth();
+    const year = currentGameTime.getFullYear();
+    const hours = time[0];
+    const minutes = time[1];
+    const seconds = time[2];
     return new Date(year, month, day, hours, minutes, seconds, 0);
   }
 
   const cellDay = attackDay.split('.');
-  var day = cellDay[0];
-  var month = cellDay[1] - 1;
-  if (currentGameTime.getMonth() === 0 && month === 11) {
-    var year = currentGameTime.getFullYear() - 1;
-  } else {
-    var year = currentGameTime.getFullYear();
-  }
-  var time = attackTime.split(':');
-  var hours = time[0];
-  var minutes = time[1];
-  var seconds = time[2];
+  const day = cellDay[0];
+  const month = cellDay[1] - 1;
+  const year = currentGameTime.getMonth() === 0 && month === 11
+    ? currentGameTime.getFullYear() - 1
+    : currentGameTime.getFullYear();
+  const hours = time[0];
+  const minutes = time[1];
+  const seconds = time[2];
+  time = attackTime.split(':');
+
   return new Date(year, month, day, hours, minutes, seconds, 0);
 }
 
@@ -897,7 +893,7 @@ function loadDefaultProfile() {
 
 function setDefaultProfile() {
   if (window.top.$('#settingsProfile').val() === translations.profile_10) {
-    const newProfile = confirm(translations.dialog_02);
+    const newProfile = window.confirm(translations.dialog_02);
     if (newProfile) {
       createProfile();
       setDefaultProfile();
@@ -908,6 +904,7 @@ function setDefaultProfile() {
     const profile = window.top.$.jStorage.get(`profile:${window.top.$('#settingsProfile').val()}`);
     window.top.$.jStorage.set(`profile:${translations.profile_10}`, profile);
   }
+  return true;
 }
 
 function fillProfileList() {
@@ -930,7 +927,6 @@ function createProfile() {
     createProfile();
     return false;
   }
-  let profiles;
   if (profileName !== null && profileName !== '') {
     const settings = [];
     settings.push(window.top.$('#start_page').val());
@@ -984,6 +980,7 @@ function createProfile() {
     window.top.$('#priorityThreeProfile').append(`<option value='${profileName}'>${profileName}</option>`);
     window.top.$('#settingsProfile').val(profileName);
   }
+  return true;
 }
 
 function loadProfile(profile) {
@@ -1109,7 +1106,7 @@ function exportProfile() {
   if (profileName === translations.profile_10) {
     alert(translations.dialog_07);
   } else {
-    const profileSettings = prompt(translations.dialog_08, `${translations.dialog_09A}${profileName}${translations.dialog_09B}${profileName},${settings}${translations.dialog_09C}`);
+    prompt(translations.dialog_08, `${translations.dialog_09A}${profileName}${translations.dialog_09B}${profileName},${settings}${translations.dialog_09C}`);
   }
 }
 
@@ -1123,7 +1120,7 @@ function importProfile() {
     alert(translations.dialog_12);
     return false;
   }
-  for (i = 0; i <= profileSettings.length; i++) {
+  for (let i = 0; i <= profileSettings.length; i + 1) {
     if (profileSettings[i] === 'false' || profileSettings[i] === 'true') {
       profileSettings[i] = parseBool(profileSettings[i]);
     }
@@ -1134,6 +1131,7 @@ function importProfile() {
   window.top.$('#settingsProfile').append(`<option value='${profileName}'>${profileName}</option>`);
   window.top.$('#settingsProfile').val(profileName);
   loadProfile(profileName);
+  return true;
 }
 window.top.$(document).off();
 
@@ -1403,13 +1401,12 @@ function setDefaultLanguage() {
 }
 
 function loadLanguage(lang) {
-  window.top.$.jStorage.set('language', lang);
+  const chosenLang = window.top.$.inArray(lang, availableLangs) < 0 ? 'en' : lang;
+  window.top.$.jStorage.set('language', chosenLang);
   const profileList = window.top.$.jStorage.get('profileList');
   const defaultProfile = window.top.$.jStorage.get(`profile:${translations.profile_10}`);
-  if (window.top.$.inArray(lang, availableLangs) < 0) {
-    lang = 'en';
-  }
-  const langFile = `${scriptURL}lang/${lang}.js`;
+
+  const langFile = `${scriptURL}lang/${chosenLang}.js`;
   window.top.$.getScript(langFile, () => {
     window.top.$('#settingsDiv').remove();
     profileList[0] = translations.profile_10;
@@ -1563,5 +1560,19 @@ function uglyHider(linker) {
     window.top.$('#plunder_list_filters').toggle();
   } else if (parseInt(window.top.$(linker).attr('num'), 10) === 2) {
     window.top.$('#settingsBody').toggle();
+  }
+}
+
+function run() {
+  console.log('run');
+  checkVersion();
+  checkWorking();
+  setVersion();
+  makeItPretty();
+  showSettings();
+  turnOnHotkeys();
+  hotkeysOnOff();
+  if (userset[s.enable_auto_run] !== false) {
+    applySettings();
   }
 }
