@@ -1373,7 +1373,7 @@ function selectMasterButton(row) {
       tryClick(cButton);
       break;
     case 'N':
-      CommandPopup({target: row.attr('name')})
+      CommandPopup.openRallyPoint({target: row.attr('name')})
       break;
     default:
       row.hide();
@@ -1444,10 +1444,18 @@ function getURL() {
 function checkPage() {
   console.log('checkPage');
   if (!(window.top.game_data.screen === 'am_farm')) {
+    getCP();
     getFA();
   } else {
     run();
   }
+}
+
+function getCP() {
+  console.log('getCP');
+  window.top.$.getScript('https://dscs.innogamescdn.com/assets/cs56/d5dd3b02c5d1d1a9466e02a9ea531e42/js/game/CommandPopup.js');
+  window.top.$.getScript('https://dscs.innogamescdn.com/assets/cs56/afabb3bae0c27fbf5df77df2341fa025/js/game/TroopTemplates.js_');
+  window.top.$.getScript('https://dscs.innogamescdn.com/assets/cs56/39b2ea780ce088e15e25222236450602/js/game/TargetSelection.js_');
 }
 
 function getFA() {
