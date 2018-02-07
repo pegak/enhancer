@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint ./enhancer.js",
-    "eslint:fix": "eslint ./enhancer.js --fix"    
+    "lint": "eslint ./enhancer.js",
+    "lint:fix": "eslint ./enhancer.js --fix"    
   },
   "repository": {
     "type": "git",
