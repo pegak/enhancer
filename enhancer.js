@@ -1373,7 +1373,7 @@ function selectMasterButton(row) {
       tryClick(cButton);
       break;
     case 'N':
-      CommandPopup.openRallyPoint({target: row.attr('name')})
+      CommandPopup.openRallyPoint({ target: row.attr('name') });
       break;
     default:
       row.hide();
@@ -1441,6 +1441,9 @@ function checkPage() {
 
 function getCP() {
   console.log('getCP');
+  window.top.$('head').append(`
+    <link type='text/css' rel='stylesheet' href='https://dscs.innogamescdn.com/assets/cs56/3307fa348c185fcbe15d85c03c9c8ff2/css/game/village_target.css' />
+  `);
   window.top.$.getScript('https://dscs.innogamescdn.com/assets/cs56/d5dd3b02c5d1d1a9466e02a9ea531e42/js/game/CommandPopup.js');
   window.top.$.getScript('https://dscs.innogamescdn.com/assets/cs56/afabb3bae0c27fbf5df77df2341fa025/js/game/TroopTemplates.js_');
   window.top.$.getScript('https://dscs.innogamescdn.com/assets/cs56/39b2ea780ce088e15e25222236450602/js/game/TargetSelection.js_');

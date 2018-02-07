@@ -6,6 +6,7 @@ module.exports = {
     "globals": {
         "Dialog": true,
         "Timing": true,
+        "CommandPopup": true,
         "showNotification": true,
         "translations": true
     },
