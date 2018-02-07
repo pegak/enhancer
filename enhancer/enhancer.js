@@ -1364,7 +1364,7 @@ function getFA() {
     fadeThanksToCheese();
     openLoader();
     var vlink = link[0] + window.top.game_data.village.id + link[1];
-    window.top.$.getScript("https://" + window.top.location.host + "/js/game/Accountmanager.js", function () {
+    window.top.$.getScript("https://dscs.innogamescdn.com/assets/cs56/f911b19c152d2c32217aa3dd0a5538c0/js/game/Accountmanager.js_", function () {
         window.top.$.ajax({
             type: "GET", url: vlink, dataType: "html", error: function (xhr, statusText, error) {
                 alert("Get LA error: " + error);
