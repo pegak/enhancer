@@ -1,5 +1,5 @@
 var version = "1.13.2 Fixed By Pegak";
-var scriptName = "LA Enhancer (1.13.1) - Fixed by Pegak";
+var scriptName = "LA Enhancer (1.13.2) - Fixed by Pegak";
 var scriptURL = "https://syreanis.github.io/enhancer/";
 var updateNotesURL = "https://forum.tribalwars.net/index.php?threads/ntoombs19s-fa-filter.266604/page-15#post-7053294";
 var working = true;
